@@ -14,7 +14,7 @@
    [https://github.com/keras-team/keras](https://github.com/keras-team/keras)
    [MIT License](https://github.com/keras-team/keras/blob/master/LICENSE)
 
- * __keras-contrib
+ * __keras-contrib__
    [https://github.com/keras-team/keras-contrib](https://github.com/keras-team/keras-contrib)
    [MIT License](https://github.com/keras-team/keras-contrib/blob/master/LICENSE)
 
