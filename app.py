@@ -32,6 +32,7 @@ if __name__ == '__main__':
     while True:
         try:
             path = input("filepath:")
+            path = path.replace("\"", "")
 
             if not os.path.isfile(path):
                 print("正しくないファイルパスが入力されました。")
