@@ -5,7 +5,6 @@
 - ffmpeg [https://www.ffmpeg.org/download.html] (mp3を読み込むために必要です。)
 
 # 出力形式
-
 出力されたラベルはAudacityで視覚化できます。
 
     開始時間  終了時間  和音名
