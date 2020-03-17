@@ -42,7 +42,7 @@ def convert_time(pred, bins_per_seconds, chord_index, min_time=0.1):
             now_chord = chord
             continue
 
-        if now_chord != chord:
+        if now_chord != chord or i == len(chord) - 1:
             e_time = (i / bins_per_seconds)
 
             if abs(s_time - e_time) > min_time:
@@ -50,9 +50,18 @@ def convert_time(pred, bins_per_seconds, chord_index, min_time=0.1):
                     if times[-1][-1] == now_chord:
                         times[-1][-2] = e_time
                     else:
-                        times.append([s_time, e_time, now_chord])
+                        try:
+                            modify_chord = Chord(now_chord).modify().chord
+                        except ValueError:
+                            modify_chord = now_chord
+                        
+                        times.append([s_time, e_time, modify_chord])
                 else:
-                    times.append([s_time, e_time, now_chord])
+                    try:
+                        modify_chord = Chord(now_chord).modify().chord
+                    except ValueError:
+                        modify_chord = now_chord
+                    times.append([s_time, e_time, modify_chord])
 
                 s_time = e_time
             now_chord = chord
@@ -60,9 +69,7 @@ def convert_time(pred, bins_per_seconds, chord_index, min_time=0.1):
     return times
 
 
-def standard(x, log=False):
-    if log:
-        x = np.log(0.0001 + x)
+def standard(x):
     x = (x - np.mean(x)) / np.std(x)
 
     return x
@@ -88,10 +95,7 @@ def preprocess(path, sr=16000, hop_length=512, mono=False):
     S = np.array((S_l.T, S_r.T))
     S = standard(S)
 
-    left = S[0]
-    right = S[1]
-    center = (S[0] - S[1])
-    S = np.concatenate((left, right, center), axis=-1)
+    S = np.concatenate((S[0], S[1], (S[0] - S[1])), axis=-1)
     bins_per_seconds = (S.shape[-2] / (y.shape[-1] / sr))
 
     return S, bins_per_seconds
