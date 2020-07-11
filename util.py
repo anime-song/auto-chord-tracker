@@ -26,8 +26,13 @@ def convert_time(pred, bins_per_seconds, chord_index, min_time=0.1):
 
     s_time = 0
     e_time = 0
+    last = 0
     now_chord = ""
     chord = ""
+
+    for i, t in enumerate(result):
+        if np.argmax(bass_result[i]) != 0:
+            last = i
 
     for i, t in enumerate(result):
         bass_line = np.argmax(bass_result[i])
@@ -42,7 +47,7 @@ def convert_time(pred, bins_per_seconds, chord_index, min_time=0.1):
             now_chord = chord
             continue
 
-        if now_chord != chord or i == len(chord) - 1:
+        if now_chord != chord or i == last or i == len(result) - 1:
             e_time = (i / bins_per_seconds)
 
             if abs(s_time - e_time) > min_time:
@@ -71,11 +76,10 @@ def convert_time(pred, bins_per_seconds, chord_index, min_time=0.1):
 
 def standard(x):
     x = (x - np.mean(x)) / np.std(x)
-
     return x
 
 
-def preprocess(path, sr=16000, hop_length=512, mono=False):
+def preprocess(path, sr=22050, hop_length=512, mono=False):
     y, sr = librosa.load(path, sr=sr, mono=mono)
 
     S_l = np.abs(
@@ -94,7 +98,7 @@ def preprocess(path, sr=16000, hop_length=512, mono=False):
             bins_per_octave=12 * 3)).astype("float32")
     S = np.array((S_l.T, S_r.T))
     S = standard(S)
-
+    
     S = np.concatenate((S[0], S[1], (S[0] - S[1])), axis=-1)
     bins_per_seconds = (S.shape[-2] / (y.shape[-1] / sr))
 
